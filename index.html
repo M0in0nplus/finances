@@ -56,7 +56,7 @@ th{color:var(--mut);font-weight:500;font-size:13px}
 <body>
 <main>
 <h1>Mes finances</h1>
-<p class="sub">Tout reste dans ton navigateur. Rien n’est envoyé nulle part.</p>
+<p class="sub">Tout reste dans ton navigateur. Rien n’est envoyé nulle part. <small style="opacity:.6">Version 30/10 · 13h</small></p>
 <nav id="nav"><a href="#budget">Budget</a><a href="#pea">PEA</a><a href="#credit">Crédit immobilier</a></nav>
 <div id="app"></div>
 </main>
@@ -268,7 +268,7 @@ const b3=bind2;bind2=function(p){b3(p);if(p!=='patrimoine')return;const c=(s,f)=
  document.querySelectorAll('[data-sel]').forEach(e=>e.addEventListener('change',()=>{S.sel[e.dataset.sel]=+e.value;render()}));
  c('#aadd2',()=>{const o=$('#ao').value;if(!o)return;S.acc.push({own:o,type:$('#at').value,name:$('#an').value.trim(),bal:0});S.sel[o]=S.acc.length-1;R()})};
 document.head.appendChild(Object.assign(document.createElement('style'),{textContent:'.xr{position:absolute;top:6px;right:6px;background:none;border:0;color:var(--neg);font-size:18px;line-height:1;padding:4px 9px;cursor:pointer;border-radius:6px}.xr:hover{background:var(--bg)}@media(min-width:561px){.bar{grid-template-columns:220px 1fr 90px}}'}));
-const balOf=a=>a.bm&&a.bal!=null?+a.bal||0:(a.csvBal!=null?a.csvBal:(a.tx&&a.tx.length?Math.round(sum(a.tx.map(t=>t.amount))*100)/100:(+a.bal||0)));
+const balOf=a=>a.bm&&a.bal!=null&&(+a.bal!==0||!(a.tx&&a.tx.length))?+a.bal||0:(a.csvBal!=null?a.csvBal:(a.tx&&a.tx.length?Math.round(sum(a.tx.map(t=>t.amount))*100)/100:(+a.bal||0)));
 const balSrc=a=>a.bm?'Solde saisi à la main.':(a.csvBal!=null?'Solde lu dans le relevé au '+a.csvDate.split('-').reverse().join('/')+'.':(a.tx&&a.tx.length?'Pas de colonne « solde » dans ce CSV : somme des opérations importées (peut différer du vrai solde, corrige-le à la main si besoin).':''));
 const RATE={'Livret A':1.7,'LDDS':1.7,'LEP':2.5,'Livret jeune':1.7,'PEL':2,'Assurance-vie':2,'Autre':1},CEIL={'Livret A':22950,'LDDS':12000,'LEP':10000},RFR=['Livret A','LDDS','LEP'],rateOf=a=>a.rate!=null?a.rate:(RATE[a.type]||1);
 const proj=(b,r,d,n,cap)=>{const v=[b];for(let i=1;i<=n;i++)v.push(v[i-1]+Math.min(v[i-1],cap||1e12)*r/1200+d);return v};
@@ -294,7 +294,7 @@ pat=function(){const A=S.acc;let h=kp([['PEA',E(pvl('pea'))],['CTO',E(pvl('cto')
   const add=`<div class="row" style="margin:14px 0 0"><label>Type<select data-nt="${oi}">${TY.map(t=>`<option>${t}</option>`).join('')}</select></label><label>Nom (facultatif)<input data-nn="${oi}" placeholder="ex. Crédit Agricole"></label><button class="alt" data-add="${oi}">Ajouter un compte</button></div>`;
   return bx('o'+oi,`<h2 style="margin:0 36px 0 0">${esc(o)}</h2>${card}${add}`,'panel','',' et tout ce qu’elle contient')}).join('');
  h+=`<div class="panel"><h2>Ajouter un enfant</h2><div class="row"><input id="on" placeholder="Prénom"><button class="alt" id="oadd">Ajouter</button></div></div>`;return h+BK2};
-const b4=bind2;bind2=function(p){b4(p);if(p!=='patrimoine')return;document.querySelectorAll('[data-bauto]').forEach(e=>e.addEventListener('click',()=>{S.acc[+e.dataset.bauto].bm=false;save();render()}));document.querySelectorAll('[data-rreset]').forEach(e=>e.addEventListener('click',()=>{S.acc[+e.dataset.rreset].rate=null;save();render()}));[['bal','bal'],['rate','rate'],['dep','dep']].forEach(([d,k])=>document.querySelectorAll('[data-'+d+']').forEach(e=>e.addEventListener('change',()=>{const v=num(e.value),ac=S.acc[+e.dataset[d]];ac[k]=isNaN(v)?(k==='rate'?null:0):v;if(k==='bal')ac.bm=true;save();render()})));document.querySelectorAll('[data-add]').forEach(e=>e.addEventListener('click',()=>{const i=+e.dataset.add,o=S.owners[i],ty=document.querySelector('[data-nt="'+i+'"]').value,nm=document.querySelector('[data-nn="'+i+'"]').value.trim();S.acc.push({own:o,type:ty,name:nm,bal:0});S.sel[o]=S.acc.length-1;save();render()}))};
+const b4=bind2;bind2=function(p){b4(p);if(p!=='patrimoine')return;document.querySelectorAll('[data-bauto]').forEach(e=>e.addEventListener('click',()=>{S.acc[+e.dataset.bauto].bm=false;save();render()}));document.querySelectorAll('[data-rreset]').forEach(e=>e.addEventListener('click',()=>{S.acc[+e.dataset.rreset].rate=null;save();render()}));[['bal','bal'],['rate','rate'],['dep','dep']].forEach(([d,k])=>document.querySelectorAll('[data-'+d+']').forEach(e=>e.addEventListener('change',()=>{const v=num(e.value),ac=S.acc[+e.dataset[d]];ac[k]=isNaN(v)?(k==='rate'?null:0):v;if(k==='bal')ac.bm=!isNaN(v);save();render()})));document.querySelectorAll('[data-add]').forEach(e=>e.addEventListener('click',()=>{const i=+e.dataset.add,o=S.owners[i],ty=document.querySelector('[data-nt="'+i+'"]').value,nm=document.querySelector('[data-nn="'+i+'"]').value.trim();S.acc.push({own:o,type:ty,name:nm,bal:0});S.sel[o]=S.acc.length-1;save();render()}))};
 S.bacc=S.bacc||['Compte chèque couple','Compte chèque 2'];if(!S.isrc)S.isrc=S.bacc[0];
 let CWW=0;const CW=()=>CWW||Math.max(300,Math.min(860,((document.querySelector('main')||{}).clientWidth||640)-40));
 const MA=m=>m.slice(5,7)+'/'+m.slice(2,4);
